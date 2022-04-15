@@ -10,7 +10,7 @@
       <span class="title">BIM信息数据监控系统</span>
       <div class="title-right">
         <img :src="themeSrc" class="qiehuan" @click="handleChangeTheme">
-        <span class="datetime">2049-01-01 00:00:00</span>
+        <span class="datetime">{{dateFormat(date)}}</span>
       </div>
     </header>
     <div class="screen-body">
@@ -88,6 +88,10 @@ export default {
     this.$socket.registerCallBack('themeChange', this.recvThemeChange)
   },
   destroyed () {
+    // 页面销毁的时候，销毁定时器
+    if (this.dateTimeI) {
+      clearInterval(this.dateTimeI)
+    }
     // 页面销毁的时候取消方法注册
     this.$socket.unRegisterCallBack('fullScreen')
     this.$socket.unRegisterCallBack('themeChange')
@@ -102,10 +106,27 @@ export default {
         rank: false,
         hot: false,
         stock: false
-      }
+      },
+      date: new Date(),
+      // 时间定时器id，始终显示当前时间
+      dateTimeId: null
     }
   },
   methods: {
+    dateFormat(time) {
+      var date = new Date(time)
+      var year = date.getFullYear()
+      /* 在日期格式中，月份是从0开始的，因此要加0
+      * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+      * */
+      var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+      var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+      var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+      var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+      var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+      // 拼接
+      return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds
+    },
     changeSize (chartName) {
       // 1.改变fullScreenStatus的数据
       // this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName]
@@ -157,6 +178,12 @@ export default {
     Seller,
     Stock,
     Trend
+  },
+  mounted () {
+    // 组件渲染完成时候，启动定时器，每秒刷新显示时间
+    this.dateTimeId = setInterval(() => {
+      this.date = new Date()
+    }, 1000)
   },
   computed: {
     logoSrc () {
@@ -237,11 +264,11 @@ export default {
   .logo {
     position: absolute;
     left: 0px;
-    top: 50%;
+    top: 75%;
     transform: translateY(-80%);
     img {
-      height: 35px;
-      width: 128px;
+      height: 65px;
+      width: 150px;
     }
   }
 }
