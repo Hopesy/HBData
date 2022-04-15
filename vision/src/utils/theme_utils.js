@@ -1,6 +1,6 @@
 const theme = {
   chalk: {
-    // 背景颜色
+    // 整个页面的背景颜色
     backgroundColor: '#161522',
     // 标题的文字颜色
     titleColor: '#ffffff',
@@ -13,7 +13,7 @@ const theme = {
 
   },
   vintage: {
-    // 背景颜色
+    // 整个页面的背景颜色
     backgroundColor: '#eeeeee',
     // 标题的文字颜色
     titleColor: '#000000',

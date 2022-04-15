@@ -7,7 +7,7 @@
       <span class="logo">
         <img :src="logoSrc" alt="" />
       </span>
-      <span class="title">电商平台实时监控系统</span>
+      <span class="title">BIM信息数据监控系统</span>
       <div class="title-right">
         <img :src="themeSrc" class="qiehuan" @click="handleChangeTheme">
         <span class="datetime">2049-01-01 00:00:00</span>
@@ -88,6 +88,7 @@ export default {
     this.$socket.registerCallBack('themeChange', this.recvThemeChange)
   },
   destroyed () {
+    // 页面销毁的时候取消方法注册
     this.$socket.unRegisterCallBack('fullScreen')
     this.$socket.unRegisterCallBack('themeChange')
   },
@@ -144,6 +145,8 @@ export default {
       })
     },
     recvThemeChange () {
+      // 提交commit方法，利用mutation修改VueX中数据
+      // store中的数据也是响应式的，修改之后触发单个图表组件中的theme侦听器(watch)
       this.$store.commit('changeTheme')
     }
   },
@@ -157,6 +160,8 @@ export default {
   },
   computed: {
     logoSrc () {
+      // /代表根目录
+      // 这里面之所以用/static/img是因为vue cli 打包的时候public目录下的static静态资源会复制到跟目录下
       return '/static/img/' + getThemeValue(this.theme).logoSrc
     },
     headerSrc () {

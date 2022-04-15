@@ -72,12 +72,12 @@ export default class SocketService {
     }
   }
 
-  // 回调函数的注册
+  // 手动实现回调函数的注册
   registerCallBack (socketType, callBack) {
     this.callBackMapping[socketType] = callBack
   }
 
-  // 取消某一个回调函数
+  // 手动实现取消某一个回调函数
   unRegisterCallBack (socketType) {
     this.callBackMapping[socketType] = null
   }

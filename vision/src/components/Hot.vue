@@ -25,6 +25,7 @@ export default {
     this.$socket.registerCallBack('hotData', this.getData)
   },
   computed: {
+    // 计算属性，只要state中的数据发生变化，就会自动计算。注释要和下面对齐
     catName () {
       if (!this.allData) {
         return ''
@@ -38,26 +39,34 @@ export default {
         color: getThemeValue(this.theme).titleColor
       }
     },
+    // 使用...mapState传入一个数组，将state中的theme数据映射为同名的计算属性，实际相当于下面的代码
+    // theme () {
+    //   return this.$store.state.theme
+    // },
     ...mapState(['theme'])
   },
   mounted () {
     this.initChart()
     // this.getData()
+    // 组件渲染后向服务器发送数据请求
     this.$socket.send({
       action: 'getData',
       socketType: 'hotData',
       chartName: 'hot',
       value: ''
     })
+    // 添加监听事件
     window.addEventListener('resize', this.screenAdapter)
-    this.screenAdapter()
+    this.screenAdapter() // 初始化图表时候就要屏幕适配
   },
   destroyed () {
+    // 组件销毁时移除监听事件
     window.removeEventListener('resize', this.screenAdapter)
     this.$socket.unRegisterCallBack('hotData')
   },
   methods: {
     initChart () {
+      // 这里的theme是全局store中的theme映射的计算属性
       this.chartInstance = this.$echarts.init(this.$refs.hot_ref, this.theme)
       const initOption = {
         title: {
@@ -139,6 +148,7 @@ export default {
       }
       this.chartInstance.setOption(dataOption)
     },
+    // 屏幕分辨率适配函数
     screenAdapter () {
       this.titleFontSize = this.$refs.hot_ref.offsetWidth / 100 * 3.6
       const adapterOption = {
@@ -181,12 +191,18 @@ export default {
     }
   },
   watch: {
+    // 对全局storetheme添加侦听器，当theme发生改变时，更新图表的主题
+    // theme全局注册store的时候就被暴露出来了
     theme () {
       console.log('主题切换了')
-      this.chartInstance.dispose() // 销毁当前的图表
-      this.initChart() // 重新以最新的主题名称初始化图表对象
-      this.screenAdapter() // 完成屏幕的适配
-      this.updateChart() // 更新图表的展示
+      // 销毁当前的图表dispose()
+      this.chartInstance.dispose()
+      // 重新以最新的主题名称初始化图表对象,this.thmeme已经通过在父组件提交motutation的方式改变了
+      this.initChart()
+      // 完成屏幕的适配
+      this.screenAdapter()
+      // 更新图表的展示
+      this.updateChart()
     }
   }
 }
